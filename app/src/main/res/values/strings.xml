@@ -3,6 +3,9 @@
     <string name="title_article_detail">Article Detail</string>
     <string name="search_article">Search Article</string>
     <string name="category">Category:</string>
+    <string name="clear_filter">Clear Filter</string>
+    <string name="cancel">Cancel</string>
+    <string name="filter">Filter</string>
 
     <string-array name="search_filter">
         <item>Adventure Sports</item>

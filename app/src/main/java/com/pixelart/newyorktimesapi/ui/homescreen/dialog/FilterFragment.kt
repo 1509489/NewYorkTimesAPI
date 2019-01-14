@@ -26,9 +26,10 @@ class FilterFragment: DialogFragment(){
             val view = inflater.inflate(R.layout.dialog_fragmen, container, false)
 
             view.spinner.setItems(spinnerItems)
+            var filtered = ""
             view.tvButtonFilter.setOnClickListener {
                 val selectedItemsList = view.spinner.selectedStrings
-                var filtered = ""
+
 
                 for (i in 0 until selectedItemsList.size){
                     filtered = selectedItemsList.joinToString("\" \"", "news_desk:(\"", "\")", -1, "")
@@ -41,6 +42,11 @@ class FilterFragment: DialogFragment(){
 
                     dialog?.dismiss()
                 }
+            }
+            view.tvClearFilter.setOnClickListener {
+                filtered = ""
+                inputListener.sendData(filtered)
+                dialog?.dismiss()
             }
             view.tvCancel.setOnClickListener { dialog?.cancel() }
             view

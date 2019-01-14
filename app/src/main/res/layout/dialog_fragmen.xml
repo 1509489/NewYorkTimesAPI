@@ -12,7 +12,7 @@
             app:layout_constraintEnd_toEndOf="parent" app:contentPadding="8dp" app:cardElevation="4dp"
             app:cardBackgroundColor="@color/colorPrimary" android:id="@+id/cardView">
         <TextView
-                android:text="Filter"
+                android:text="@string/filter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/dialogTitle"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" android:textSize="30sp"
@@ -29,29 +29,42 @@
             android:layout_marginStart="8dp"
     />
     <com.pixelart.newyorktimesapi.common.MultiSelectSpinner
-            android:layout_width="290dp"
-            android:layout_height="35dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:id="@+id/spinner"
             android:layout_centerHorizontal="true"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/cardView"
+            android:layout_marginTop="14dp" app:layout_constraintTop_toBottomOf="@+id/cardView"
             app:layout_constraintStart_toEndOf="@+id/titleCategories" android:layout_marginStart="8dp"/>
     <TextView
-            android:text="Filter"
+            android:text="@string/filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/tvButtonFilter"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             android:textSize="16sp" android:textColor="@color/colorAccent" android:textStyle="bold"
             android:textAllCaps="true"
-            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/titleCategories"/>
+            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/titleCategories"
+            app:layout_constraintStart_toEndOf="@+id/tvClearFilter" android:layout_marginStart="8dp"/>
     <TextView
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/tvCancel"
+            android:textSize="16sp" android:textStyle="bold"
+            android:textAllCaps="true" android:textColor="@color/colorAccent"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@+id/tvButtonFilter"
-            android:layout_marginEnd="32dp" android:textSize="16sp" android:textStyle="bold"
-            android:textAllCaps="true" android:textColor="@color/colorAccent" android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@+id/titleCategories"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/titleCategories"
+            app:layout_constraintEnd_toStartOf="@+id/tvClearFilter" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
+    <TextView
+            android:text="@string/clear_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tvClearFilter"
+            android:textSize="16sp" android:textStyle="bold"
+            android:textAllCaps="true" android:textColor="@color/colorAccent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/titleCategories"
+            android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/tvButtonFilter"
+            app:layout_constraintStart_toEndOf="@+id/tvCancel" android:layout_marginStart="8dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

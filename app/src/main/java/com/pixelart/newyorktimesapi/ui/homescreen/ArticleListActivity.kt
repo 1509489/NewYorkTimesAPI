@@ -13,6 +13,7 @@ import com.pixelart.newyorktimesapi.R
 import com.pixelart.newyorktimesapi.adapter.ArticlesRVAdapter
 import com.pixelart.newyorktimesapi.common.*
 import com.pixelart.newyorktimesapi.data.model.Doc
+import com.pixelart.newyorktimesapi.databinding.ActivityArticleListBinding
 import com.pixelart.newyorktimesapi.di.activity.ActivityModule
 
 import com.pixelart.newyorktimesapi.ui.detailscreen.ArticleDetailActivity
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClickedListener, FilterFragment.OnInputListener {
 
     @Inject lateinit var homeViewModel: HomeViewModel
+    @Inject lateinit var binding: ActivityArticleListBinding
 
     private var twoPane: Boolean = false
     private lateinit var rvAdapter: ArticlesRVAdapter
@@ -36,12 +38,13 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_article_list)
         setSupportActionBar(toolbar)
-        toolbar.title = title
 
         injectDependencies()
+        binding.toolbar.title = title
 
+        binding.setLifecycleOwner(this)
+        binding.viewModel = homeViewModel
         rvAdapter = ArticlesRVAdapter(this)
         if (savedInstanceState != null){
             searchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)!!
@@ -49,23 +52,19 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
             homeViewModel.getArticles(searchQuery, searchFilter,
                 "", "", "", 0).observe(this, Observer {
-
                 rvAdapter.submitList(it.docs)
                 docs = it.docs
-
             })
         } else{
             homeViewModel.getArticles(searchQuery, searchFilter,
                 "", "", "", 0).observe(this, Observer {
-
                 rvAdapter.submitList(it.docs)
                 docs = it.docs
-
             })
         }
 
 
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             val dialog = FilterFragment()
             dialog.isCancelable = true
             dialog.show(supportFragmentManager, "FilterDialog")
@@ -83,19 +82,15 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
     private fun injectDependencies(){
         val activityComponent = (application as App)
             .applicationComponent
-            //.inject(this)
            .newActivityComponent(ActivityModule(this))
         activityComponent.injectHomeScreen(this)
-
-       /* DaggerActivityComponent.builder()
-            .activityModule(ActivityModule(this))
-            .build()
-            .injectHomeScreen(this)*/
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
+        val mLayoutManager = LinearLayoutManager(this)
+
         recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@ArticleListActivity)
+            layoutManager = mLayoutManager
             addItemDecoration(DividerItemDecoration(this@ArticleListActivity, LinearLayoutManager.VERTICAL))
             adapter = rvAdapter
         }
