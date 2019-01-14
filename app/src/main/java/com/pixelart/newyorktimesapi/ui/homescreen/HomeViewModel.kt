@@ -23,9 +23,10 @@ class HomeViewModel/* @Inject constructor*/(private val repositoryImpl: Reposito
 
     lateinit var docPagedList: LiveData<PagedList<Doc>>
     lateinit var liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
+    lateinit var networkService: NetworkService
 
     init {
-        val docDataSourceFactory = DataSourceFactory()
+        val docDataSourceFactory = DataSourceFactory(networkService)
         liveDataSource = docDataSourceFactory.getDocLiveDataSource()
 
         val pagedListConfig:PagedList.Config = PagedList.Config.Builder()
@@ -38,5 +39,5 @@ class HomeViewModel/* @Inject constructor*/(private val repositoryImpl: Reposito
     fun getArticles(query: String, filterQuery: String, beginDate: String,
                     endDate: String, sort: String, page: Int) : LiveData<Response> =
         repositoryImpl.getArticles(query, filterQuery, beginDate, endDate, sort, page, API_KEY)
-    
+
 }
