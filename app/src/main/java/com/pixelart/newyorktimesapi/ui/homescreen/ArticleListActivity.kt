@@ -8,12 +8,12 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.pixelart.newyorktimesapi.App
 import com.pixelart.newyorktimesapi.R
 import com.pixelart.newyorktimesapi.adapter.ArticlesRVAdapter
 import com.pixelart.newyorktimesapi.common.*
 import com.pixelart.newyorktimesapi.data.model.Doc
 import com.pixelart.newyorktimesapi.di.activity.ActivityModule
-import com.pixelart.newyorktimesapi.di.activity.DaggerActivityComponent
 
 import com.pixelart.newyorktimesapi.ui.detailscreen.ArticleDetailActivity
 import com.pixelart.newyorktimesapi.ui.detailscreen.ArticleDetailFragment
@@ -81,15 +81,16 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
     }
 
     private fun injectDependencies(){
-        /*val activityComponent = (application as App)
+        val activityComponent = (application as App)
             .applicationComponent
-            .newActivityComponent(ActivityModule(this))
-        activityComponent.injectHomeScreen(this)*/
+            //.inject(this)
+           .newActivityComponent(ActivityModule(this))
+        activityComponent.injectHomeScreen(this)
 
-        DaggerActivityComponent.builder()
+       /* DaggerActivityComponent.builder()
             .activityModule(ActivityModule(this))
             .build()
-            .injectHomeScreen(this)
+            .injectHomeScreen(this)*/
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -118,7 +119,8 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
     }
 
     override fun sendData(input: String) {
-        homeViewModel.getArticles(searchQuery, input,
+        searchFilter = input
+        homeViewModel.getArticles(searchQuery, searchFilter,
             "", "", "", 0).observe(this, Observer {
             rvAdapter.submitList(it.docs)
         })
@@ -129,12 +131,9 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             R.id.imbSearch ->{
                 val query = etSearch.text.toString()
                 searchQuery = query
-                searchFilter = "news_desk:(\"Sports\")"
                 homeViewModel.getArticles(query, searchFilter,
                     "", "", "", 0).observe(this, Observer {
-
                     rvAdapter.submitList(it.docs)
-
                 })
             }
         }

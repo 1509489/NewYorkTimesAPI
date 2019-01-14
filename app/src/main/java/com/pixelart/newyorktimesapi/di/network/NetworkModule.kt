@@ -2,7 +2,7 @@ package com.pixelart.newyorktimesapi.di.network
 
 import com.pixelart.newyorktimesapi.common.BASE_URL
 import com.pixelart.newyorktimesapi.data.network.NetworkService
-import com.pixelart.newyorktimesapi.di.activity.ActivityComponent
+import com.pixelart.newyorktimesapi.di.application.ApplicationScope
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -10,13 +10,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 @Module
 class NetworkModule {
 
     @Provides
-    @Singleton
+    @ApplicationScope
     fun providesIntercepter():HttpLoggingInterceptor{
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -24,7 +23,7 @@ class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @ApplicationScope
     fun providesOkHttpClient(interceptor: HttpLoggingInterceptor):OkHttpClient{
         return OkHttpClient.Builder()
             .addInterceptor(interceptor)
@@ -32,7 +31,7 @@ class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @ApplicationScope
     fun providesRetrofitClient(okHttpClient: OkHttpClient):Retrofit{
         return Retrofit.Builder()
             .client(okHttpClient)
@@ -43,6 +42,6 @@ class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @ApplicationScope
     fun providesNetworkService(retrofit: Retrofit) = retrofit.create(NetworkService::class.java)
 }
