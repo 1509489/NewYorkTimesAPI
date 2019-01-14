@@ -3,47 +3,41 @@ package com.pixelart.newyorktimesapi.ui.homescreen
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagedList
 import com.pixelart.newyorktimesapi.common.API_KEY
 import com.pixelart.newyorktimesapi.data.model.APIResponse
+import com.pixelart.newyorktimesapi.data.model.Doc
 import com.pixelart.newyorktimesapi.data.model.Response
 import com.pixelart.newyorktimesapi.data.network.NetworkService
+import com.pixelart.newyorktimesapi.data.repository.RepositoryImpl
+import com.pixelart.newyorktimesapi.factories.DataSourceFactory
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor(private val networkService: NetworkService): ViewModel() {
+class HomeViewModel/* @Inject constructor*/(private val repositoryImpl: RepositoryImpl): ViewModel() {
 
-    /*fun getArticles(query: String, filterQuery: String, beginDate: String,
-                    endDate: String, sort: String, page: Int) : LiveData<Response> =
-        repositoryImpl.getArticles(query, filterQuery, beginDate, endDate, sort, page, API_KEY)*/
+    lateinit var docPagedList: LiveData<PagedList<Doc>>
+    lateinit var liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
+    lateinit var networkService: NetworkService
 
-    private val response = MutableLiveData<Response>()
+    init {
+        val docDataSourceFactory = DataSourceFactory(networkService)
+        liveDataSource = docDataSourceFactory.getDocLiveDataSource()
 
-    fun getArticles(
-        query: String,
-        filterQuery: String,
-        beginDate: String,
-        endDate: String,
-        sort: String,
-        page: Int
-    ): LiveData<Response> {
+        val pagedListConfig:PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(10).build()
 
-        networkService.getArticles(query, filterQuery, /*beginDate, endDate, sort,*/ page, API_KEY)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : SingleObserver<APIResponse> {
-                override fun onSuccess(t: APIResponse) {
-                    response.value = t.response
-                }
-
-                override fun onSubscribe(d: Disposable) {
-                }
-
-                override fun onError(e: Throwable) {
-                }
-            })
-        return response
+        docPagedList = LivePagedListBuilder(docDataSourceFactory, pagedListConfig).build()
     }
+
+    fun getArticles(query: String, filterQuery: String, beginDate: String,
+                    endDate: String, sort: String, page: Int) : LiveData<Response> =
+        repositoryImpl.getArticles(query, filterQuery, beginDate, endDate, sort, page, API_KEY)
+
 }
