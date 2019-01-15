@@ -12,8 +12,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class ArticleDataSource(private val networkService: NetworkService, private var query: String,
-                        private val filteredQuery: String, private var page: Int): PageKeyedDataSource<Int, Doc>() {
+                        private val filteredQuery: String, private var page: Int):
+    PageKeyedDataSource<Int, Doc>(){
     private val TAG = "ArticleDataSource"
+
+    private var isLoading: Boolean = false
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Doc>) {
         networkService.getArticles(query, filteredQuery, page, API_KEY)
@@ -21,8 +24,8 @@ class ArticleDataSource(private val networkService: NetworkService, private var 
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : SingleObserver<APIResponse>{
                 override fun onSuccess(t: APIResponse) {
-
-                    callback.onResult(t.response.docs, null, page + 1)
+                    Log.d(TAG, "Current Page: $page")
+                    callback.onResult(t.response.docs, null, page+1)
                 }
 
                 override fun onSubscribe(d: Disposable) {
@@ -43,7 +46,7 @@ class ArticleDataSource(private val networkService: NetworkService, private var 
                 override fun onSuccess(t: APIResponse) {
                     val pages: Int = t.response.meta.hits / 10
 
-                    var hasMore: Boolean
+                    val hasMore: Boolean
 
                     hasMore = pages > params.key
 
@@ -52,16 +55,21 @@ class ArticleDataSource(private val networkService: NetworkService, private var 
 
                     Log.d(TAG, "Next Page: ${page}")
                     callback.onResult(t.response.docs, nextPage)
+                    isLoading = false
+                    Log.d(TAG, "Loading Status: $isLoading")
                 }
 
                 override fun onSubscribe(d: Disposable) {
-
+                    isLoading = true
+                    Log.d(TAG, "Loading Status: $isLoading")
                 }
 
                 override fun onError(e: Throwable) {
                     e.printStackTrace()
                 }
             })
+
+        //Log.d(TAG, "Loading Status: $isLoading")
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Doc>) {
@@ -85,5 +93,5 @@ class ArticleDataSource(private val networkService: NetworkService, private var 
             })
     }
 
-    //fun getPage
+    fun getLoadingStatus(): Boolean = isLoading
 }

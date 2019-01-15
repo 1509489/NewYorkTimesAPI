@@ -5,6 +5,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import com.pixelart.newyorktimesapi.R
 import com.pixelart.newyorktimesapi.data.repository.RepositoryImpl
+import com.pixelart.newyorktimesapi.databinding.ActivityArticleListBinding
 import com.pixelart.newyorktimesapi.factories.HomePagingViewModelFactory
 import com.pixelart.newyorktimesapi.factories.HomeViewModelFactory
 import com.pixelart.newyorktimesapi.ui.homescreen.HomePagingViewModel
@@ -30,8 +31,7 @@ class ActivityModule(val activity: AppCompatActivity) {
     @ActivityScope
     fun providesHomePagingViewModel(homePagingViewModelFactory: HomePagingViewModelFactory) =
         ViewModelProviders.of(activity, homePagingViewModelFactory).get(HomePagingViewModel::class.java)
-/*
     @Provides
     @ActivityScope
-    fun providesHomescreenBinding() = DataBindingUtil.setContentView<ActivityArticleListBinding>(activity, R.layout.activity_article_list)*/
+    fun providesHomescreenBinding() = DataBindingUtil.setContentView<ActivityArticleListBinding>(activity, R.layout.activity_article_list)
 }

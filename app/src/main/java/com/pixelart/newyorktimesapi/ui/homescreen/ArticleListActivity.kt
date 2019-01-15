@@ -16,6 +16,7 @@ import com.pixelart.newyorktimesapi.adapter.ArticlesRVAdapter
 import com.pixelart.newyorktimesapi.adapter.ArticlesRVPagedListAdapter
 import com.pixelart.newyorktimesapi.common.*
 import com.pixelart.newyorktimesapi.data.model.Doc
+import com.pixelart.newyorktimesapi.databinding.ActivityArticleListBinding
 import com.pixelart.newyorktimesapi.di.activity.ActivityModule
 
 import com.pixelart.newyorktimesapi.ui.detailscreen.ArticleDetailActivity
@@ -27,11 +28,11 @@ import javax.inject.Inject
 
 
 class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClickedListener,
-    ArticlesRVPagedListAdapter.OnItemClickedListener, FilterFragment.OnInputListener {
+    ArticlesRVPagedListAdapter.OnItemClickedListener, FilterFragment.OnInputListener{
 
     @Inject lateinit var homeViewModel: HomeViewModel
     @Inject lateinit var pagedViewModel: HomePagingViewModel
-    //@Inject lateinit var binding: ActivityArticleListBinding
+    @Inject lateinit var binding: ActivityArticleListBinding
 
     private var twoPane: Boolean = false
     private lateinit var rvAdapter: ArticlesRVAdapter
@@ -43,14 +44,15 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_article_list)
+        //setContentView(R.layout.activity_article_list)
         setSupportActionBar(toolbar)
 
         injectDependencies()
-        toolbar.title = title
+        binding.toolbar.title = title
 
-        //binding.setLifecycleOwner(this)
+        binding.setLifecycleOwner(this)
         //binding.viewModel = homeViewModel
+        binding.pagedViewModel = pagedViewModel
         rvAdapter = ArticlesRVAdapter(this)
         rvPagedListAdapter = ArticlesRVPagedListAdapter(this)
         if (savedInstanceState != null){
@@ -68,7 +70,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
             pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
                 rvPagedListAdapter.submitList(it)
-                docs = it
+                docs = it as List<Doc>
             })
 
         } else{
@@ -83,10 +85,12 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
             pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
                 rvPagedListAdapter.submitList(it)
-                docs = it
+                docs = it as List<Doc>
             })
         }
 
+        //pbNextPage.visibility = View.INVISIBLE
+        showHideLoadingIndicator()
 
         fab.setOnClickListener {
             val dialog = FilterFragment()
@@ -119,6 +123,11 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             //adapter = rvAdapter
             adapter = rvPagedListAdapter
         }
+    }
+
+    private fun showHideLoadingIndicator(){
+        if (pagedViewModel.isLoading()) pbNextPage.visibility = View.VISIBLE
+        else pbNextPage.visibility = View.INVISIBLE
     }
 
     override fun itemClickedListener(position: Int) {
@@ -169,10 +178,10 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
                 pagedViewModel.setQuery(searchQuery)
                 //pagedViewModel.setQueryFilter(searchFilter)
 
-                /*pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+                pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
                     rvPagedListAdapter.submitList(it)
                     //docs = it
-                })*/
+                })
             }
         }
     }

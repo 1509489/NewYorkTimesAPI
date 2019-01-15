@@ -1,7 +1,7 @@
 package com.pixelart.newyorktimesapi.common
 
 const val BASE_URL = "https://api.nytimes.com/svc/"
-const val API_KEY = "1a739c2c973749c38d6146683483a374"
+const val API_KEY = "fZWoqWu4Mw0AADqAgSBSLO9LutGcppP0"
 const val BASE_IMAGE_URL = "https://www.nytimes.com/"
 
 //SavedInstanceState Keys

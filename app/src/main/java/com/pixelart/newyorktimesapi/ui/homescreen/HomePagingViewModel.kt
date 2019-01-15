@@ -1,5 +1,6 @@
 package com.pixelart.newyorktimesapi.ui.homescreen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
@@ -10,6 +11,7 @@ import com.pixelart.newyorktimesapi.factories.DataSourceFactory
 import javax.inject.Inject
 
 class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
+    private val TAG = "HomePagingViewModel"
 
     var docPagedList: LiveData<PagedList<Doc>>
     var liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
@@ -27,6 +29,8 @@ class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
             .setPageSize(10).build()
 
         docPagedList = LivePagedListBuilder(docDataSourceFactory, pagedListConfig).build()
+
+        //Log.d(TAG, "Loading Status: ${docDataSourceFactory.isLoading}")
     }
 
     fun setQuery(query:String){
@@ -35,4 +39,6 @@ class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
     fun setQueryFilter(filter: String){
         docDataSourceFactory.queryFilter(filter)
     }
+
+    fun isLoading(): Boolean =  docDataSourceFactory.isLoading
 }
