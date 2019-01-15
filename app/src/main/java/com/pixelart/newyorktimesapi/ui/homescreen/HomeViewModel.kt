@@ -8,20 +8,6 @@ import com.pixelart.newyorktimesapi.data.repository.RepositoryImpl
 
 class HomeViewModel/* @Inject constructor*/(private val repositoryImpl: RepositoryImpl): ViewModel() {
 
-    /*lateinit var docPagedList: LiveData<PagedList<Doc>>
-    lateinit var liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
-    lateinit var networkService: NetworkService*/
-
-    /*init {
-        val docDataSourceFactory = DataSourceFactory(networkService)
-        liveDataSource = docDataSourceFactory.getDocLiveDataSource()
-
-        val pagedListConfig:PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(10).build()
-
-        docPagedList = LivePagedListBuilder(docDataSourceFactory, pagedListConfig).build()
-    }*/
 
     fun getArticles(query: String, filterQuery: String, beginDate: String,
                     endDate: String, sort: String, page: Int) : LiveData<Response> =

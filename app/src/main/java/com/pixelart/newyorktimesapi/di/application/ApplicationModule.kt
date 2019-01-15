@@ -5,6 +5,8 @@ import android.content.Context
 import com.pixelart.newyorktimesapi.data.network.NetworkService
 import com.pixelart.newyorktimesapi.data.repository.RepositoryImpl
 import com.pixelart.newyorktimesapi.di.network.NetworkModule
+import com.pixelart.newyorktimesapi.factories.DataSourceFactory
+import com.pixelart.newyorktimesapi.factories.HomePagingViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -20,4 +22,12 @@ class ApplicationModule(private val application: Application) {
     //@Singleton
     @ApplicationScope
     fun providesRepository(networkService: NetworkService) : RepositoryImpl = RepositoryImpl(networkService)
+
+    @Provides
+    @ApplicationScope
+    fun providesDataSourceFactory(networkService: NetworkService): DataSourceFactory = DataSourceFactory(networkService)
+
+    @Provides
+    @ApplicationScope
+    fun providesHomePagingViewModelFactory(dataSourceFactory: DataSourceFactory): HomePagingViewModelFactory = HomePagingViewModelFactory(dataSourceFactory)
 }

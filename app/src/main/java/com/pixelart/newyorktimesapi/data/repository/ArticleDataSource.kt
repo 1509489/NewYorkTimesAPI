@@ -1,0 +1,89 @@
+package com.pixelart.newyorktimesapi.data.repository
+
+import android.util.Log
+import androidx.paging.PageKeyedDataSource
+import com.pixelart.newyorktimesapi.common.API_KEY
+import com.pixelart.newyorktimesapi.data.model.APIResponse
+import com.pixelart.newyorktimesapi.data.model.Doc
+import com.pixelart.newyorktimesapi.data.network.NetworkService
+import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+
+class ArticleDataSource(private val networkService: NetworkService, private var query: String,
+                        private val filteredQuery: String, private var page: Int): PageKeyedDataSource<Int, Doc>() {
+    private val TAG = "ArticleDataSource"
+
+    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Doc>) {
+        networkService.getArticles(query, filteredQuery, page, API_KEY)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : SingleObserver<APIResponse>{
+                override fun onSuccess(t: APIResponse) {
+
+                    callback.onResult(t.response.docs, null, page + 1)
+                }
+
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onError(e: Throwable) {
+                    e.printStackTrace()
+                }
+            })
+    }
+
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Doc>) {
+        networkService.getArticles(query, filteredQuery, page, API_KEY)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : SingleObserver<APIResponse>{
+                override fun onSuccess(t: APIResponse) {
+                    val pages: Int = t.response.meta.hits / 10
+
+                    var hasMore: Boolean
+
+                    hasMore = pages > params.key
+
+                    val nextPage = (if (hasMore) params.key +1 else null)?.toInt()
+                    page = params.key
+
+                    Log.d(TAG, "Next Page: ${page}")
+                    callback.onResult(t.response.docs, nextPage)
+                }
+
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onError(e: Throwable) {
+                    e.printStackTrace()
+                }
+            })
+    }
+
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Doc>) {
+        networkService.getArticles(query, filteredQuery, page, API_KEY)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : SingleObserver<APIResponse>{
+                override fun onSuccess(t: APIResponse) {
+                    val adjacentKey = (if (params.key > 0 ) params.key - 1 else null)?.toInt()
+                    Log.d(TAG, "Previous Page: ${params.key}")
+                    callback.onResult(t.response.docs, adjacentKey)
+                }
+
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onError(e: Throwable) {
+                    e.printStackTrace()
+                }
+            })
+    }
+
+    //fun getPage
+}

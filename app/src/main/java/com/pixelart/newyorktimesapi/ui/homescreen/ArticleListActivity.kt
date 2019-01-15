@@ -3,17 +3,19 @@ package com.pixelart.newyorktimesapi.ui.homescreen
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pixelart.newyorktimesapi.App
 import com.pixelart.newyorktimesapi.R
 import com.pixelart.newyorktimesapi.adapter.ArticlesRVAdapter
+import com.pixelart.newyorktimesapi.adapter.ArticlesRVPagedListAdapter
 import com.pixelart.newyorktimesapi.common.*
 import com.pixelart.newyorktimesapi.data.model.Doc
-import com.pixelart.newyorktimesapi.databinding.ActivityArticleListBinding
 import com.pixelart.newyorktimesapi.di.activity.ActivityModule
 
 import com.pixelart.newyorktimesapi.ui.detailscreen.ArticleDetailActivity
@@ -24,13 +26,16 @@ import kotlinx.android.synthetic.main.article_list.*
 import javax.inject.Inject
 
 
-class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClickedListener, FilterFragment.OnInputListener {
+class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClickedListener,
+    ArticlesRVPagedListAdapter.OnItemClickedListener, FilterFragment.OnInputListener {
 
     @Inject lateinit var homeViewModel: HomeViewModel
-    @Inject lateinit var binding: ActivityArticleListBinding
+    @Inject lateinit var pagedViewModel: HomePagingViewModel
+    //@Inject lateinit var binding: ActivityArticleListBinding
 
     private var twoPane: Boolean = false
     private lateinit var rvAdapter: ArticlesRVAdapter
+    private lateinit var rvPagedListAdapter: ArticlesRVPagedListAdapter
     private lateinit var docs: List<Doc>
     private var searchQuery = "news"
     private var searchFilter = ""
@@ -38,28 +43,47 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_article_list)
         setSupportActionBar(toolbar)
 
         injectDependencies()
-        binding.toolbar.title = title
+        toolbar.title = title
 
-        binding.setLifecycleOwner(this)
-        binding.viewModel = homeViewModel
+        //binding.setLifecycleOwner(this)
+        //binding.viewModel = homeViewModel
         rvAdapter = ArticlesRVAdapter(this)
+        rvPagedListAdapter = ArticlesRVPagedListAdapter(this)
         if (savedInstanceState != null){
             searchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)!!
             searchFilter = savedInstanceState.getString(SEARCH_QUERY_FILTER_KEY)!!
 
-            homeViewModel.getArticles(searchQuery, searchFilter,
+            /*homeViewModel.getArticles(searchQuery, searchFilter,
                 "", "", "", 0).observe(this, Observer {
                 rvAdapter.submitList(it.docs)
                 docs = it.docs
+            })*/
+
+            pagedViewModel.setQuery(searchQuery)
+            pagedViewModel.setQueryFilter(searchFilter)
+
+            pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+                rvPagedListAdapter.submitList(it)
+                docs = it
             })
+
         } else{
-            homeViewModel.getArticles(searchQuery, searchFilter,
+            /*homeViewModel.getArticles(searchQuery, searchFilter,
                 "", "", "", 0).observe(this, Observer {
                 rvAdapter.submitList(it.docs)
                 docs = it.docs
+            })*/
+
+            pagedViewModel.setQuery(searchQuery)
+            pagedViewModel.setQueryFilter(searchFilter)
+
+            pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+                rvPagedListAdapter.submitList(it)
+                docs = it
             })
         }
 
@@ -92,7 +116,8 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
         recyclerView.apply {
             layoutManager = mLayoutManager
             addItemDecoration(DividerItemDecoration(this@ArticleListActivity, LinearLayoutManager.VERTICAL))
-            adapter = rvAdapter
+            //adapter = rvAdapter
+            adapter = rvPagedListAdapter
         }
     }
 
@@ -115,9 +140,17 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
     override fun sendData(input: String) {
         searchFilter = input
-        homeViewModel.getArticles(searchQuery, searchFilter,
+        /*homeViewModel.getArticles(searchQuery, searchFilter,
             "", "", "", 0).observe(this, Observer {
             rvAdapter.submitList(it.docs)
+        })*/
+
+        //pagedViewModel.setQuery(searchQuery)
+        pagedViewModel.setQueryFilter(searchFilter)
+
+        pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+            rvPagedListAdapter.submitList(it)
+            //docs = it
         })
     }
 
@@ -126,10 +159,20 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             R.id.imbSearch ->{
                 val query = etSearch.text.toString()
                 searchQuery = query
-                homeViewModel.getArticles(query, searchFilter,
+                /*homeViewModel.getArticles(query, searchFilter,
                     "", "", "", 0).observe(this, Observer {
                     rvAdapter.submitList(it.docs)
-                })
+                })*/
+
+                Toast.makeText(this, searchQuery, Toast.LENGTH_SHORT).show()
+
+                pagedViewModel.setQuery(searchQuery)
+                //pagedViewModel.setQueryFilter(searchFilter)
+
+                /*pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+                    rvPagedListAdapter.submitList(it)
+                    //docs = it
+                })*/
             }
         }
     }
