@@ -1,6 +1,5 @@
 package com.pixelart.newyorktimesapi.ui.homescreen
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
@@ -8,13 +7,12 @@ import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagedList
 import com.pixelart.newyorktimesapi.data.model.Doc
 import com.pixelart.newyorktimesapi.factories.DataSourceFactory
-import javax.inject.Inject
 
 class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
-    private val TAG = "HomePagingViewModel"
+    //private val TAG = "HomePagingViewModel"
 
     var docPagedList: LiveData<PagedList<Doc>>
-    var liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
+    private var liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
 /*
     private var query: String? = null
     private var filteredQuery: String? = null*/

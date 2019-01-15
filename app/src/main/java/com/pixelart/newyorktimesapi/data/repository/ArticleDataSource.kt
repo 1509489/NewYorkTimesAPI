@@ -53,7 +53,7 @@ class ArticleDataSource(private val networkService: NetworkService, private var 
                     val nextPage = (if (hasMore) params.key +1 else null)?.toInt()
                     page = params.key
 
-                    Log.d(TAG, "Next Page: ${page}")
+                    Log.d(TAG, "Next Page: $page")
                     callback.onResult(t.response.docs, nextPage)
                     isLoading = false
                     Log.d(TAG, "Loading Status: $isLoading")
