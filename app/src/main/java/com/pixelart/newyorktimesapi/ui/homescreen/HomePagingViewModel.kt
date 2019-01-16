@@ -1,5 +1,6 @@
 package com.pixelart.newyorktimesapi.ui.homescreen
 
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
@@ -11,17 +12,12 @@ import com.pixelart.newyorktimesapi.factories.DataSourceFactory
 class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
     //private val TAG = "HomePagingViewModel"
 
-    var docPagedList: LiveData<PagedList<Doc>>
-    private var liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
-/*
-    private var query: String? = null
-    private var filteredQuery: String? = null*/
+    private val docPagedList: LiveData<PagedList<Doc>>
+    private val liveDataSource: LiveData<PageKeyedDataSource<Int, Doc>>
     private val docDataSourceFactory = dataSourceFactory
 
     init {
-
         liveDataSource = docDataSourceFactory.getDocLiveDataSource()
-
         val pagedListConfig:PagedList.Config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(10).build()
@@ -30,6 +26,8 @@ class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
 
         //Log.d(TAG, "Loading Status: ${docDataSourceFactory.isLoading}")
     }
+    
+    fun getArticles():LiveData<PagedList<Doc>> = docPagedList
 
     fun setQuery(query:String){
         docDataSourceFactory.query(query)
@@ -37,6 +35,8 @@ class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
     fun setQueryFilter(filter: String){
         docDataSourceFactory.queryFilter(filter)
     }
+    
+    val loading = docDataSourceFactory.loadingState()
 
-    fun isLoading(): Boolean =  docDataSourceFactory.isLoading
+    fun isLoading(): ObservableBoolean =  docDataSourceFactory.isLoading
 }

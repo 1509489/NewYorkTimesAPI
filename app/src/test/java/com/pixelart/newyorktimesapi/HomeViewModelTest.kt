@@ -1,6 +1,9 @@
 package com.pixelart.newyorktimesapi
 
+import androidx.lifecycle.Observer
+import androidx.paging.PagedList
 import com.pixelart.newyorktimesapi.data.model.APIResponse
+import com.pixelart.newyorktimesapi.data.model.Doc
 import com.pixelart.newyorktimesapi.data.model.Meta
 import com.pixelart.newyorktimesapi.data.model.Response
 import com.pixelart.newyorktimesapi.data.network.NetworkService
@@ -27,6 +30,7 @@ class HomeViewModelTest {
     private lateinit var apiResponse: APIResponse
 
     @Mock private lateinit var networkService: NetworkService
+    @Mock lateinit var observer: Observer<PagedList<Doc>>
 
     companion object {
         @BeforeClass
@@ -56,6 +60,10 @@ class HomeViewModelTest {
     fun testSuccess(){
         Mockito.`when`(networkService.getArticles(Mockito.anyString(), Mockito.anyString(),
             Mockito.anyInt(), Mockito.anyString())).thenReturn(Single.just(apiResponse))
+        
+        pagedViewModel.getArticles().observeForever(observer)
+        
+        Mockito.verify(observer).onChanged(Mockito.any() as PagedList<Doc>)
 
     }
 }

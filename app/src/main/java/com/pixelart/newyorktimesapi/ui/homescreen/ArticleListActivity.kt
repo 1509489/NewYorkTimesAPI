@@ -1,8 +1,10 @@
 package com.pixelart.newyorktimesapi.ui.homescreen
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -68,7 +70,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             pagedViewModel.setQuery(searchQuery)
             pagedViewModel.setQueryFilter(searchFilter)
 
-            pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+            pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
                 rvPagedListAdapter.submitList(it)
                 docs = it as List<Doc>
             })
@@ -83,7 +85,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             pagedViewModel.setQuery(searchQuery)
             pagedViewModel.setQueryFilter(searchFilter)
 
-            pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+            pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
                 rvPagedListAdapter.submitList(it)
                 docs = it as List<Doc>
             })
@@ -126,7 +128,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
     }
 
     private fun showHideLoadingIndicator(){
-        if (pagedViewModel.isLoading()) pbNextPage.visibility = View.VISIBLE
+        if (pagedViewModel.loading) pbNextPage.visibility = View.VISIBLE
         else pbNextPage.visibility = View.INVISIBLE
     }
 
@@ -157,7 +159,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
         //pagedViewModel.setQuery(searchQuery)
         pagedViewModel.setQueryFilter(searchFilter)
 
-        pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+        pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
             rvPagedListAdapter.submitList(it)
             //docs = it
         })
@@ -178,12 +180,25 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
                 pagedViewModel.setQuery(searchQuery)
                 //pagedViewModel.setQueryFilter(searchFilter)
 
-                pagedViewModel.docPagedList.observe(this, Observer<PagedList<Doc>>{
+                pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
                     rvPagedListAdapter.submitList(it)
                     //docs = it
                 })
+                
+                hideKeyboard()
             }
         }
+    }
+    
+    private fun hideKeyboard() {
+        val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = this.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(this)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
