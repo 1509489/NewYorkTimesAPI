@@ -7,9 +7,10 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagedList
 import com.pixelart.newyorktimesapi.data.model.Doc
+import com.pixelart.newyorktimesapi.data.repository.ArticleDataSource
 import com.pixelart.newyorktimesapi.factories.DataSourceFactory
 
-class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
+class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel(),ArticleDataSource.OnSetView {
     //private val TAG = "HomePagingViewModel"
 
     private val docPagedList: LiveData<PagedList<Doc>>
@@ -36,7 +37,9 @@ class HomePagingViewModel (dataSourceFactory: DataSourceFactory):ViewModel() {
         docDataSourceFactory.queryFilter(filter)
     }
     
-    val loading = docDataSourceFactory.loadingState()
-
-    fun isLoading(): ObservableBoolean =  docDataSourceFactory.isLoading
+    var isLoading = false
+    
+    override fun setLoadingIndicator(isLoading: Boolean) {
+        this.isLoading = isLoading
+    }
 }

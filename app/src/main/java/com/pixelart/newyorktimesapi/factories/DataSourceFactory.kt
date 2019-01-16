@@ -18,8 +18,6 @@ class DataSourceFactory(private val networkService: NetworkService): DataSource.
 
     override fun create(): DataSource<Int, Doc> {
         dataSource = ArticleDataSource(networkService, query, queryFilter, 0)
-        isLoading = dataSource.getLoadingStatus()
-        Log.d(TAG, "${dataSource.getLoadingStatus()}")
         docLiveDataSource.postValue(dataSource)
         return dataSource
     }
@@ -40,11 +38,11 @@ class DataSourceFactory(private val networkService: NetworkService): DataSource.
         this.queryFilter = queryFilter
     }
     
-    fun loadingState(): Boolean{
+    /*fun loadingState(): Boolean{
         return if (::dataSource.isInitialized)
             dataSource.getLoadingStatus().get()
         else false
-    }
+    }*/
 
     private var query: String = ""
     private var queryFilter: String = ""

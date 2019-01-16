@@ -7,6 +7,8 @@ import com.pixelart.newyorktimesapi.common.API_KEY
 import com.pixelart.newyorktimesapi.data.model.APIResponse
 import com.pixelart.newyorktimesapi.data.model.Doc
 import com.pixelart.newyorktimesapi.data.network.NetworkService
+import com.pixelart.newyorktimesapi.factories.DataSourceFactory
+import com.pixelart.newyorktimesapi.ui.homescreen.HomePagingViewModel
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -18,7 +20,8 @@ class ArticleDataSource(private val networkService: NetworkService, private val 
     private val TAG = "ArticleDataSource"
 
     private var isLoading: Boolean = false
-    private val loading: ObservableBoolean = ObservableBoolean()
+    private lateinit var setLoading: OnSetView
+    
     
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Doc>) {
@@ -43,6 +46,14 @@ class ArticleDataSource(private val networkService: NetworkService, private val 
 
     
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Doc>) {
+    
+        try {
+            val homePagingViewModel = HomePagingViewModel(DataSourceFactory(networkService))
+            setLoading = homePagingViewModel as OnSetView
+        }catch (e: ClassCastException){
+            e.printStackTrace()
+        }
+        
         networkService.getArticles(query, filteredQuery, page, API_KEY)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -60,13 +71,13 @@ class ArticleDataSource(private val networkService: NetworkService, private val 
                     Log.d(TAG, "Next Page: $page")
                     callback.onResult(t.response.docs, nextPage)
                     isLoading = false
-                    loading.set(true)
+                    setLoading.setLoadingIndicator(isLoading)
                     Log.d(TAG, "Loading Status: $isLoading")
                 }
 
                 override fun onSubscribe(d: Disposable) {
                     isLoading = true
-                    loading.set(false)
+                    setLoading.setLoadingIndicator(isLoading)
                     Log.d(TAG, "Loading Status: $isLoading")
                 }
 
@@ -98,9 +109,7 @@ class ArticleDataSource(private val networkService: NetworkService, private val 
                 }
             })
     }
-
-//    fun getLoadingStatus(): Boolean = isLoading
-    fun getLoadingStatus(): ObservableBoolean = ObservableBoolean(loading.get())
+    
     
     fun setQuery(query: String){
         invalidate()
@@ -108,5 +117,9 @@ class ArticleDataSource(private val networkService: NetworkService, private val 
     
     fun setFilter(filter: String){
         invalidate()
+    }
+
+    interface OnSetView {
+        fun setLoadingIndicator(isLoading: Boolean)
     }
 }

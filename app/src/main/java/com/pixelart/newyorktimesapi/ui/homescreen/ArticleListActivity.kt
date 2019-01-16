@@ -128,7 +128,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
     }
 
     private fun showHideLoadingIndicator(){
-        if (pagedViewModel.loading) pbNextPage.visibility = View.VISIBLE
+        if (pagedViewModel.isLoading) pbNextPage.visibility = View.VISIBLE
         else pbNextPage.visibility = View.INVISIBLE
     }
 
