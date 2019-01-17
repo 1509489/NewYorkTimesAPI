@@ -2,10 +2,8 @@ package com.pixelart.newyorktimesapi.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -15,14 +13,17 @@ import com.pixelart.newyorktimesapi.common.BASE_IMAGE_URL
 import com.pixelart.newyorktimesapi.common.GlideApp
 import com.pixelart.newyorktimesapi.data.model.Doc
 import com.pixelart.newyorktimesapi.data.model.Multimedium
+import com.pixelart.newyorktimesapi.databinding.ArticleListContentBinding
+import kotlinx.android.synthetic.main.article_list_content.view.*
 
 class ArticlesRVAdapter(private val listener: OnItemClickedListener): ListAdapter<Doc, ArticlesRVAdapter.ViewHolder>(DIFF_CALLBACK) {
     private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticlesRVAdapter.ViewHolder {
         context = parent.context
-        val view = LayoutInflater.from(context).inflate(R.layout.article_list_content, parent, false)
-        return ViewHolder(view, context)
+        val view: ArticleListContentBinding = DataBindingUtil.inflate(LayoutInflater.from(context),
+        R.layout.article_list_content, parent, false)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ArticlesRVAdapter.ViewHolder, position: Int) {
@@ -32,41 +33,35 @@ class ArticlesRVAdapter(private val listener: OnItemClickedListener): ListAdapte
         holder.itemView.setOnClickListener { listener.itemClickedListener(position) }
     }
 
-    class ViewHolder(itemView: View, private val context: Context): RecyclerView.ViewHolder(itemView){
-        private val headline: TextView = itemView.findViewById(R.id.tvArticleHeadline)
-        private val snippet: TextView = itemView.findViewById(R.id.tvArticleSnippet)
-        private val pubDate: TextView = itemView.findViewById(R.id.tvPublishDate)
-        private val image: ImageView = itemView.findViewById(R.id.ivArticleImage)
+    class ViewHolder(itemView: ArticleListContentBinding): RecyclerView.ViewHolder(itemView.root){
 
         fun setContent(doc: Doc){
-            headline.text = doc.headline.main
-            snippet.text = doc.snippet
-            pubDate.text = doc.pubDate
-
-            val multimedia: ArrayList<Multimedium> = doc.multimedia as ArrayList<Multimedium>
-            var thumbnail = ""
-
-            for (media in multimedia)
-            {
-                if (media.type == "image" && media.subtype == "thumbnail"){
-                    thumbnail = BASE_IMAGE_URL + media.url
-                    break
+            itemView.apply {
+                tvArticleHeadline.text = doc.headline.main
+                tvArticleSnippet.text = doc.snippet
+                tvPublishDate.text = doc.pubDate
+        
+                val multimedia: ArrayList<Multimedium> = doc.multimedia as ArrayList<Multimedium>
+                var thumbnail = ""
+        
+                for (media in multimedia)
+                {
+                    if (media.type == "image" && media.subtype == "thumbnail"){
+                        thumbnail = BASE_IMAGE_URL + media.url
+                        break
+                    }
                 }
+        
+                GlideApp.with(context).load(thumbnail)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .placeholder(R.drawable.news_image_placeholder)
+                    .into(ivArticleImage)
             }
-
-            GlideApp.with(context).load(thumbnail)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .placeholder(R.drawable.news_image_placeholder)
-                .into(image)
         }
     }
 
     interface OnItemClickedListener{
         fun itemClickedListener(position: Int)
-    }
-
-    fun clearList(){
-
     }
 
     companion object {

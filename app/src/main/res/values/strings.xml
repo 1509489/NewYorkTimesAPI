@@ -6,6 +6,7 @@
     <string name="clear_filter">Clear Filter</string>
     <string name="cancel">Cancel</string>
     <string name="filter">Filter</string>
+    <string name="article_image">Article Image</string>
 
     <string-array name="search_filter">
         <item>Adventure Sports</item>

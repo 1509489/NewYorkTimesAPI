@@ -2,6 +2,7 @@
   <dictionary name="popys">
     <words>
       <w>databinding</w>
+      <w>initialloading</w>
     </words>
   </dictionary>
 </component>

@@ -17,6 +17,7 @@ import com.pixelart.newyorktimesapi.adapter.ArticlesRVAdapter
 import com.pixelart.newyorktimesapi.adapter.ArticlesRVPagedListAdapter
 import com.pixelart.newyorktimesapi.common.*
 import com.pixelart.newyorktimesapi.data.model.Doc
+import com.pixelart.newyorktimesapi.data.repository.ArticleDataSource
 import com.pixelart.newyorktimesapi.databinding.ActivityArticleListBinding
 import com.pixelart.newyorktimesapi.di.activity.ActivityModule
 
@@ -73,8 +74,27 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             docs = it as List<Doc>
         })
         
+        pagedViewModel.getState().observe(this, Observer {
+            when(it!!){
+                ArticleDataSource.State.INITIALLOADING -> {
+                    pbInitial.visibility = View.VISIBLE
+                    pbNextPage.visibility = View.GONE
+                }
+                ArticleDataSource.State.LOADING -> pbNextPage.visibility = View.VISIBLE
+                
+                ArticleDataSource.State.SUCCESS -> {
+                    pbInitial.visibility = View.GONE
+                    pbNextPage.visibility = View.GONE
+                }
+                
+                ArticleDataSource.State.FAILURE ->{
+                    pbInitial.visibility = View.GONE
+                    pbNextPage.visibility = View.GONE
+                }
+            }
+        })
+        
         //pbNextPage.visibility = View.INVISIBLE
-        showHideLoadingIndicator()
 
         fab.setOnClickListener {
             val dialog = FilterFragment()
@@ -105,11 +125,6 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             //adapter = rvAdapter
             adapter = rvPagedListAdapter
         }
-    }
-
-    private fun showHideLoadingIndicator(){
-        if (pagedViewModel.isLoading) pbNextPage.visibility = View.VISIBLE
-        else pbNextPage.visibility = View.INVISIBLE
     }
 
     override fun itemClickedListener(position: Int) {

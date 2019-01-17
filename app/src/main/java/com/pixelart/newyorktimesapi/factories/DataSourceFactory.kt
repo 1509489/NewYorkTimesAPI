@@ -1,7 +1,7 @@
 package com.pixelart.newyorktimesapi.factories
 
-import android.util.Log
-import androidx.databinding.ObservableBoolean
+//import androidx.databinding.ObservableBoolean
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
@@ -10,40 +10,37 @@ import com.pixelart.newyorktimesapi.data.network.NetworkService
 import com.pixelart.newyorktimesapi.data.repository.ArticleDataSource
 
 class DataSourceFactory(private val networkService: NetworkService): DataSource.Factory<Int, Doc>() {
-    private val TAG = "DataSourceFactory"
+    //private val TAG = "DataSourceFactory"
 
-    var isLoading = ObservableBoolean()
     private val docLiveDataSource = MutableLiveData<PageKeyedDataSource<Int, Doc>>()
     private lateinit var dataSource: ArticleDataSource
+    private var query: String = ""
+    private var queryFilter: String = ""
+    private val stateObservable = MutableLiveData<ArticleDataSource.State>()
 
     override fun create(): DataSource<Int, Doc> {
-        dataSource = ArticleDataSource(networkService, query, queryFilter, 0)
+        dataSource = ArticleDataSource(networkService, query, queryFilter, 0, stateObservable)
         docLiveDataSource.postValue(dataSource)
+        
         return dataSource
     }
 
-    fun getDocLiveDataSource():MutableLiveData<PageKeyedDataSource<Int, Doc>> = docLiveDataSource
+    fun getDocLiveDataSource(): LiveData<PageKeyedDataSource<Int, Doc>> = docLiveDataSource
+    
+    fun getStateObservable(): LiveData<ArticleDataSource.State> = stateObservable
+    
 
     fun query(query: String){
        if(::dataSource.isInitialized){
-           dataSource.setQuery(query)
+           dataSource.setQuery()
        }
         this.query = query
     }
 
     fun queryFilter(queryFilter: String){
         if (::dataSource.isInitialized){
-            dataSource.setFilter(queryFilter)
+            dataSource.setFilter()
         }
         this.queryFilter = queryFilter
     }
-    
-    /*fun loadingState(): Boolean{
-        return if (::dataSource.isInitialized)
-            dataSource.getLoadingStatus().get()
-        else false
-    }*/
-
-    private var query: String = ""
-    private var queryFilter: String = ""
 }

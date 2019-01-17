@@ -18,20 +18,29 @@
     
     -->
 
+    <ProgressBar
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pbInitial"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/pbNextPage" app:layout_constraintEnd_toEndOf="@+id/article_list"
+            android:layout_marginEnd="8dp"/>
     <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                                                xmlns:tools="http://schemas.android.com/tools"
                                                android:id="@+id/article_list"
                                                android:name="com.pixelart.newyorktimesapi.ArticleListFragment"
                                                android:layout_width="@dimen/item_width"
-                                               android:layout_height="match_parent"
+                                               android:layout_height="0dp"
                                                app:layoutManager="LinearLayoutManager"
                                                tools:context="com.pixelart.newyorktimesapi.ui.homescreen.ArticleListActivity"
                                                tools:listitem="@layout/article_list_content"
                                                app:layout_constraintStart_toStartOf="parent"
                                                app:layout_constraintTop_toTopOf="parent"
-                                               app:layout_constraintBottom_toBottomOf="parent"
                                                app:layout_constraintEnd_toStartOf="@+id/article_detail_container"
-                                               android:layout_marginEnd="8dp"/>
+                                               android:layout_marginEnd="8dp"
+                                               app:layout_constraintBottom_toTopOf="@+id/pbNextPage"/>
 
     <FrameLayout
             android:id="@+id/article_detail_container"
@@ -49,7 +58,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/pbNextPage"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/article_list" android:layout_marginEnd="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
