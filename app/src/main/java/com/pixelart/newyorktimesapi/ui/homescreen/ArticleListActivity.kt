@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
@@ -32,7 +31,7 @@ import javax.inject.Inject
 class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClickedListener,
     ArticlesRVPagedListAdapter.OnItemClickedListener, FilterFragment.OnInputListener{
 
-    @Inject lateinit var homeViewModel: HomeViewModel
+    //@Inject lateinit var homeViewModel: HomeViewModel
     @Inject lateinit var pagedViewModel: HomePagingViewModel
     @Inject lateinit var binding: ActivityArticleListBinding
 
@@ -57,40 +56,23 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
         binding.pagedViewModel = pagedViewModel
         rvAdapter = ArticlesRVAdapter(this)
         rvPagedListAdapter = ArticlesRVPagedListAdapter(this)
+    
         if (savedInstanceState != null){
             searchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)!!
             searchFilter = savedInstanceState.getString(SEARCH_QUERY_FILTER_KEY)!!
-
-            /*homeViewModel.getArticles(searchQuery, searchFilter,
-                "", "", "", 0).observe(this, Observer {
-                rvAdapter.submitList(it.docs)
-                docs = it.docs
-            })*/
-
+        
             pagedViewModel.setQuery(searchQuery)
             pagedViewModel.setQueryFilter(searchFilter)
-
-            pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
-                rvPagedListAdapter.submitList(it)
-                docs = it as List<Doc>
-            })
-
         } else{
-            /*homeViewModel.getArticles(searchQuery, searchFilter,
-                "", "", "", 0).observe(this, Observer {
-                rvAdapter.submitList(it.docs)
-                docs = it.docs
-            })*/
-
             pagedViewModel.setQuery(searchQuery)
             pagedViewModel.setQueryFilter(searchFilter)
-
-            pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
-                rvPagedListAdapter.submitList(it)
-                docs = it as List<Doc>
-            })
         }
-
+    
+        pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
+            rvPagedListAdapter.submitList(it)
+            docs = it as List<Doc>
+        })
+        
         //pbNextPage.visibility = View.INVISIBLE
         showHideLoadingIndicator()
 
@@ -104,8 +86,6 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
         if (article_detail_container != null) {
             twoPane = true
         }
-
-
         setupRecyclerView(article_list)
     }
 
@@ -151,18 +131,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
 
     override fun sendData(input: String) {
         searchFilter = input
-        /*homeViewModel.getArticles(searchQuery, searchFilter,
-            "", "", "", 0).observe(this, Observer {
-            rvAdapter.submitList(it.docs)
-        })*/
-
-        //pagedViewModel.setQuery(searchQuery)
         pagedViewModel.setQueryFilter(searchFilter)
-
-        pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
-            rvPagedListAdapter.submitList(it)
-            //docs = it
-        })
     }
 
     fun search(view: View){
@@ -170,21 +139,7 @@ class ArticleListActivity : AppCompatActivity(), ArticlesRVAdapter.OnItemClicked
             R.id.imbSearch ->{
                 val query = etSearch.text.toString()
                 searchQuery = query
-                /*homeViewModel.getArticles(query, searchFilter,
-                    "", "", "", 0).observe(this, Observer {
-                    rvAdapter.submitList(it.docs)
-                })*/
-
-                Toast.makeText(this, searchQuery, Toast.LENGTH_SHORT).show()
-
-                pagedViewModel.setQuery(searchQuery)
-                //pagedViewModel.setQueryFilter(searchFilter)
-
-                pagedViewModel.getArticles().observe(this, Observer<PagedList<Doc>>{
-                    rvPagedListAdapter.submitList(it)
-                    //docs = it
-                })
-                
+               pagedViewModel.setQuery(searchQuery)
                 hideKeyboard()
             }
         }

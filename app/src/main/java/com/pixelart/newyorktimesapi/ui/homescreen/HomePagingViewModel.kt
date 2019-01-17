@@ -1,6 +1,5 @@
 package com.pixelart.newyorktimesapi.ui.homescreen
 
-import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
