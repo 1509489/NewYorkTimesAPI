@@ -29,9 +29,7 @@ class HomeViewModelTest {
     @Mock lateinit var observer: Observer<PagedList<Doc>>
     @Mock lateinit var stateObserver: Observer<ArticleDataSource.State>
     
-    @Captor
-    lateinit var captor: ArgumentCaptor<PagedList<Doc>>
-    
+    @Captor lateinit var captor: ArgumentCaptor<PagedList<Doc>>
     @Captor lateinit var stateCaptor: ArgumentCaptor<ArticleDataSource.State>
     
     @get:Rule
